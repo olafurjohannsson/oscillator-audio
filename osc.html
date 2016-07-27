@@ -1,0 +1,114 @@
+<html>
+
+<head>
+
+    <title>osc</title>
+</head>
+
+<body>
+
+    <input type="button" value="start" id="start" />
+    <input type="button" value="stop" id="stop" />
+    <label id="hertz-value"></label>
+    <input id="hertz" min="0" max="20000" step="10" type="range" value="0">
+    <select id="freq">
+    <option value="sine">sine</option>
+    <option value="square">square</option>
+    <option value="sawtooth">sawtooth</option>
+    <option value="triangle">triangle</option>
+    <option value="custom">custom</option>
+</select>
+</body>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+    crossorigin="anonymous"></script>
+<script type="text/javascript">
+    // get audio
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function oscillator() {
+        var oscillator = audioCtx.createOscillator();
+        var gainNode = audioCtx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        return {
+            osc: oscillator,
+            gain: gainNode
+        }
+
+    }
+
+    window.osc = oscillator();
+
+    $(document).ready(function () {
+
+        $("#hertz").change(function () {
+            $("#hertz-value").text(this.value);
+            window.osc.frequency.value = parseInt(this.value); // value in hertz
+        });
+
+        $("#freq").change(function() {
+            console.log(this.value);
+            window.osc.type = this.value; // sine wave — other values are 'square', 'sawtooth', 'triangle' and 'custom'
+        });
+
+        $("#start").click(function () {
+            var osc1 = g3(oscillator()),
+                osc2 = e3(oscillator()),
+                osc3 = c3(oscillator());
+            osc1.start();osc2.start();osc3.start();
+            
+        
+        /*
+             setInterval(function () {
+                randomize('sawtooth');
+            }, 500);
+        
+            setInterval(function () {
+                randomize('sine');
+            }, 500);
+            */
+        });
+
+        $("#stop").click(function () {
+            window.osc.stop();
+        });
+
+        function g3(obj) {
+            obj.osc.frequency.value = 196.0;
+            obj.osc.type = 'sawtooth';
+            obj.gain.gain.value = 2;
+            return obj.osc;
+        }
+
+        function e3(obj) {
+            obj.osc.frequency.value = 164.81;
+            obj.osc.type = 'sine';
+            obj.gain.gain.value = 2;
+            return obj.osc;            
+        }
+
+        function c3(obj) {
+            obj.osc.frequency.value = 130.81;
+            obj.osc.type = 'sine';
+            obj.gain.gain.value = 2;
+            return obj.osc;
+        }
+
+        function randomize(type) {
+            window.osc.frequency.value = parseInt(Math.floor(Math.random() * 440) + 100);
+            window.osc.type = type || {
+                1: 'sine',
+                2: 'square',
+                3: 'sawtooth',
+                4: 'triangle',
+                5: 'custom'
+            }[Math.floor(Math.random() * 4) + 1];
+        };
+        
+
+       
+    });
+
+</script>
+
+</html>
