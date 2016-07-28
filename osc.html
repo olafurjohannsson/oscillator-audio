@@ -7,10 +7,10 @@
 
 <body>
 
-    <input type="button" value="start" id="start" />
-    <input type="button" value="stop" id="stop" />
-    <label id="hertz-value"></label>
-    <input id="hertz" min="0" max="20000" step="10" type="range" value="0">
+    <input type="button" value="start" id="start" data-id="" />
+    <input type="button" value="stop" id="stop" data-id="" /> Hertz: <label id="hertz-value"></label>
+    <input id="hertz" min="0" max="20000" step="10" type="range" value="0"> Gain: <label id="gain-value"></label>
+    <input id="gain" min="0" max="10000" step="10" type="range" value="100">
     <select id="freq">
     <option value="sine">sine</option>
     <option value="square">square</option>
@@ -23,7 +23,9 @@
     crossorigin="anonymous"></script>
 <script type="text/javascript">
     // get audio
+    
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var id = 0;
     function oscillator() {
         var oscillator = audioCtx.createOscillator();
         var gainNode = audioCtx.createGain();
@@ -32,12 +34,18 @@
         gainNode.connect(audioCtx.destination);
         return {
             osc: oscillator,
-            gain: gainNode
+            gain: gainNode,
+            id: ++id
         }
-
+    }
+    
+    function step(power) {
+        return Math.pow(440 * (1.059463094359), power);
     }
 
-    window.osc = oscillator();
+    function sleep (time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
 
     $(document).ready(function () {
 
@@ -52,45 +60,79 @@
         });
 
         $("#start").click(function () {
-            var osc1 = g3(oscillator()),
-                osc2 = e3(oscillator()),
-                osc3 = c3(oscillator());
-            osc1.start();osc2.start();osc3.start();
-            
-        
-        /*
-             setInterval(function () {
-                randomize('sawtooth');
-            }, 500);
-        
-            setInterval(function () {
-                randomize('sine');
-            }, 500);
-            */
+            /*var i = 0;
+            setInterval(function() {
+                if (i % 2 == 0) {
+                    g3(oscillator()).start();
+                } 
+                else {
+                    e3(oscillator()).start();
+                }
+            }, 500);*/
+
+            playInterval();
         });
 
         $("#stop").click(function () {
-            window.osc.stop();
+            
         });
+
+        function playInterval() {
+            // Random number from 0 to 12
+            // Math.pow(440 * (1.059463094359), random);
+
+            // Instance of osc for random note #1
+            // Set timeout
+                // Set another timeout for second note
+
+            function randomNote() {
+                var rando = Math.floor(Math.random() * 12) + 1;
+                // 440 is a4
+                return 440 * Math.pow(1.059463094359, rando); 
+            }
+
+            setTimeout(function () {
+                // First note played
+                var osc1 = oscillator().osc;
+                osc1.frequency.value = randomNote();
+                osc1.start();
+
+                setTimeout(function () {
+                    // Turn off first note
+                    osc1.stop();
+
+                    sleep(1500).then(() => {
+                        // Do something after the sleep!
+                        var osc2 = oscillator().osc;
+                        osc2.frequency.value = randomNote();
+                        osc2.start();
+
+                        setTimeout(function () {
+                            osc2.stop();
+                        }, 1500);
+                    })
+                }, 2000);
+            }, 500)
+        }
 
         function g3(obj) {
             obj.osc.frequency.value = 196.0;
             obj.osc.type = 'sawtooth';
-            obj.gain.gain.value = 2;
+            //obj.gain.gain.value = 100;
             return obj.osc;
         }
 
         function e3(obj) {
             obj.osc.frequency.value = 164.81;
             obj.osc.type = 'sine';
-            obj.gain.gain.value = 2;
+            //obj.gain.gain.value = 100;
             return obj.osc;            
         }
 
         function c3(obj) {
             obj.osc.frequency.value = 130.81;
             obj.osc.type = 'sine';
-            obj.gain.gain.value = 2;
+            //obj.gain.gain.value = 100;
             return obj.osc;
         }
 
