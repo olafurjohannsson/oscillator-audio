@@ -111,7 +111,7 @@ header {
 /* Animation */
 .ani-success-fade-gradient {
     display: none;
-    animation: colorchange 1s;
+    animation: colorchange 1.5s;
 }
 
 .ani-wrong-fade-gradient {
@@ -156,6 +156,13 @@ header {
 .ani-success-text-blink {
     animation-name: success-text-blink;
     animation-duration: .7s;
+}
+
+.tada {
+  -webkit-animation-name: tada;
+  animation-name: tada;
+  animation-delay: -300ms; 
+  animation-duration: 1.6s !important;
 }
 
 @keyframes success-text-blink {
@@ -210,10 +217,10 @@ header {
   90%  {background: @color-green-success;}
   100% {
         background: @color-gray;
-        -webkit-transition: opacity 2s ease-in-out;
-        -moz-transition: opacity 2s ease-in-out;
-        -ms-transition: opacity 2s ease-in-out;
-        -o-transition: opacity 2s ease-in-out;
+        -webkit-transition: opacity 4s ease-in-out;
+        -moz-transition: opacity 4s ease-in-out;
+        -ms-transition: opacity 4s ease-in-out;
+        -o-transition: opacity 4s ease-in-out;
          opacity: 1;
     }
 }
@@ -284,7 +291,13 @@ header {
         color: #fff;
         z-index: 1;
         overflow: hidden;
-
+        .repeat {
+            display: none;
+            position: absolute;
+            left: 20px;
+            top: 16px;
+            cursor: pointer;
+        }
         .gradient-container {
             z-index: -1;
 

@@ -35,6 +35,7 @@
             <div class="ani-success-circle"></div> <!-- Animated circle -->
 
             <div class="content">
+                <i class="fa fa-refresh repeat" aria-hidden="true"></i>
                 <i class="fa fa-music animated" aria-hidden="true"></i>
                 <p class="status">
                     Click to start
@@ -196,6 +197,93 @@
         }
     }
 
+    function playInterval(firstNote, secondNote) {
+        // Random number from 0 to 12
+        // Math.pow(440 * (1.059463094359), random);
+
+        // Instance of osc for random note #1
+        // Set timeout
+            // Set another timeout for second note
+        
+        /*
+            var mgr = oscManager();
+
+            mgr.wait(333)
+               .oscillator()
+               .randomNote()
+               .start()
+               .wait(1333)
+               .stop()
+               .sleep(1333)
+               .oscillator()
+               .randomNote()
+               .start()
+               .wait(1333)
+               .stop();
+
+            mgr.wait(333)
+               .playNote(-1)
+               .for(1333)
+               .playNote(-1)
+               .for(1333);
+
+
+        */
+
+        window.rootNote = 440; // a4
+        window.firstStep = 0;
+        window.secondStep = 0;
+
+        function randomNote(order) {
+            var rando = Math.floor(Math.random() * 12) + 1;
+
+            if (order == "first") {
+                firstStep = rando;
+            } else {
+                secondStep = rando;
+            }
+            // 440 is a4
+            return rootNote * Math.pow(1.059463094359, rando); 
+        }
+
+        setTimeout(function () {
+
+            // First note played
+            var osc1 = oscillator().osc;
+            osc1.frequency.value = firstNote ? firstNote : randomNote("first");
+            osc1.start();
+            $(".fa-music").addClass("tada");
+
+            setTimeout(function () {
+                // Turn off first note
+                osc1.stop();
+                $(".fa-music").removeClass("tada");
+
+                sleep(1333).then(() => {
+                    // Play second note
+                    var osc2 = oscillator().osc;
+                    osc2.frequency.value = secondNote ? secondNote : randomNote("second");
+                    osc2.start();
+
+                    // Stop second note
+                    setTimeout(function () {
+                        osc2.stop();
+
+                        $(".repeat").show();
+                    }, 1333);
+                })
+            }, 1333);
+        }, 333)
+    }
+
+    function repeatInterval() {
+        playInterval(getNoteFromSteps(firstStep), getNoteFromSteps(secondStep));
+    }
+
+    function getNoteFromSteps(steps) {
+        return rootNote * Math.pow(1.059463094359, steps); 
+    }
+
     $(document).ready(function () {
 
         $("#hertz").change(function () {
@@ -240,82 +328,11 @@
             }
         });
 
-        function playInterval() {
-            // Random number from 0 to 12
-            // Math.pow(440 * (1.059463094359), random);
-
-            // Instance of osc for random note #1
-            // Set timeout
-                // Set another timeout for second note
-            
-            /*
-                var mgr = oscManager();
-
-                mgr.wait(333)
-                   .oscillator()
-                   .randomNote()
-                   .start()
-                   .wait(1333)
-                   .stop()
-                   .sleep(1333)
-                   .oscillator()
-                   .randomNote()
-                   .start()
-                   .wait(1333)
-                   .stop();
-
-                mgr.wait(333)
-                   .playNote(-1)
-                   .for(1333)
-                   .playNote(-1)
-                   .for(1333);
-
-
-            */
-
-            window.rootNote = 440; // a4
-            window.firstStep = 0;
-            window.secondStep = 0;
-
-            function randomNote(order) {
-                var rando = Math.floor(Math.random() * 12) + 1;
-
-                if (order == "first") {
-                    firstStep = rando;
-                } else {
-                    secondStep = rando;
-                }
-                // 440 is a4
-                return rootNote * Math.pow(1.059463094359, rando); 
-            }
-
-            setTimeout(function () {
-
-                // First note played
-                var osc1 = oscillator().osc;
-                osc1.frequency.value = randomNote("first");
-                osc1.start();
-                $(".fa-music").addClass("tada");
-
-                setTimeout(function () {
-                    // Turn off first note
-                    osc1.stop();
-                    $(".fa-music").removeClass("tada");
-
-                    sleep(1333).then(() => {
-                        // Play second note
-                        var osc2 = oscillator().osc;
-                        osc2.frequency.value = randomNote("second");
-                        osc2.start();
-
-                        // Stop second note
-                        setTimeout(function () {
-                            osc2.stop();
-                        }, 1333);
-                    })
-                }, 1333);
-            }, 333)
-        }
+        $(".repeat").click(function (e) {
+            repeatInterval();
+            runPlayingAnimation();
+            e.stopPropagation();
+        });
 
         function g3(obj) {
             obj.osc.frequency.value = 196.0;
