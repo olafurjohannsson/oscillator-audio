@@ -4,109 +4,7 @@
 
     <title>Not�mon</title>
 
-    <style type="text/css">
-    body {
-        font-family: 'Open Sans', sans-serif;
-        font-size: 20px;
-        font-weight: 300;
-        padding: 0px;
-        margin: 0px;
-    }
-    header {
-        width: 100%;
-        font-weight: 300;
-        letter-spacing: 3px;
-        background-color: #f68e56;
-        padding: 9px;
-        margin-bottom: 45px;
-        color: #fff;
-    }
-    #interval-container {
-        width: 288px;
-        margin: 0 auto;
-        border-radius: 3px;
-        background-color: #7e8386;
-        border: 1px solid #7e7e7e;
-    }
-    .header {
-        height: 200px;
-        text-align: center;
-        color: #fff;
-    }
-    .header:hover {
-        cursor: pointer;
-    }
-    .header .fa-music {
-        font-size: 100px;
-        color: #fff;
-        margin-top: 45px;
-    }
-    #interval-container #options {
-        background-color: #e0e0e0;
-    }
-    #interval-container .btn {
-        position: relative;
-        height: 50px;
-        width: 50%;
-        float: left;
-        border-right: 1px solid #7e7e7e;
-        border-bottom: 1px solid #7e7e7e;
-        padding: 12px;
-        text-align: center;
-        box-sizing: border-box;
-        overflow: hidden;
-    }
-    #interval-container .btn:hover {
-        background-color: #cacaca;
-        cursor: pointer;
-    }
-    #interval-container .btn.major::after, #interval-container .btn.minor::after, #interval-container .btn.augmented::after {
-        content: '';
-        display: block;
-        position: absolute;
-        top: 15px;
-        right: -17px;
-        width: 51px;
-        padding: 2px;
-        text-align: center;
-        font-size: 13px;
-        font-weight: 300;
-        color: #fff;
-        letter-spacing: 2px;
-
-        -webkit-transform: rotate(90deg);
-        -moz-transform: rotate(90deg);
-        -o-transform: rotate(90deg);
-        -ms-transform: rotate(90deg);
-        transform: rotate(90deg);
-    }
-    #interval-container .btn.major::after {
-        content: 'maj';
-        background-color: #7cc576;
-    }
-    #interval-container .btn.minor::after {
-        content: 'min';
-        background-color: #f68e56;
-    }
-    #interval-container .btn.augmented::after {
-        content: 'aug';
-        background-color: #a186be;
-    }
-    #interval-container .btn-wide {
-        width: 100%;
-        border-right: none;
-    }
-    #interval-container .btn-wide.end {
-        border-bottom: none;
-    }
-    #interval-container .btn.end {
-        border-right: none;
-    }
-    #interval-container .btn.bottom {
-        border-bottom: none;
-    }
-    </style>
-
+    <link href='css/style.min.css' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,  400,600,800' rel='stylesheet' type='text/css'>
     <link href='css/font-awesome.min.css' rel='stylesheet' type='text/css'>
     <link href='css/animate.css' rel='stylesheet' type='text/css'>
@@ -132,10 +30,16 @@
 
     <div id="interval-container">
         <div class="header">
-            <i class="fa fa-music animated" aria-hidden="true"></i>
-            <p class="status">
-                Click to start
-            </p>
+            <!-- Animations -->
+            <div class="success-indicator ani-success-fade-gradient"></div> <!-- Animated gradient -->
+            <div class="ani-success-circle"></div> <!-- Animated circle -->
+
+            <div class="content">
+                <i class="fa fa-music animated" aria-hidden="true"></i>
+                <p class="status">
+                    Click to start
+                </p>
+            </div>
         </div>
 
         <div id="options">
@@ -162,6 +66,8 @@
             <div style="clear: both"></div>
         </div>
     </div>
+
+    <button class="successs" type="button" style="position: absolute; top: 0;">success</button>
 </body>
 <script src="oscillator.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
@@ -228,13 +134,49 @@
         $("#interval-container .btn").click(function () {
             var userAnswer = $(this).data("steps");
             var correctAnswer = Math.abs(window.firstStep - window.secondStep); // Always make positive number
+            runSuccessAnimation();
+            $("#interval-container .status").text("Correct!").show();return;
 
             if (userAnswer == correctAnswer) {
                 $("#interval-container .status").text("Correct!").show();
             } else {
                 $("#interval-container .status").text("Wrong :(").show();
             }
+            $(".success-indicator").toggleClass("success");
         });
+
+        function runSuccessAnimation() {
+            var fadeAni = $(".ani-success-fade-gradient"),
+            circleAni =  $(".ani-success-circle");
+
+            resetAnimation(fadeAni);
+            resetAnimation(circleAni);
+
+            /* Note bounce ani */
+            setTimeout(function () {
+                var $musicNote = $(".fa-music");
+                $musicNote.addClass("bounce");
+
+                var el = $musicNote,  
+                newone = el.clone(true);
+                       
+                el.before(newone);
+                    
+                el.remove();
+            });
+
+            var $text = $("#interval-container .status").text("Correct!").addClass("ani-success-text-blink");
+            resetAnimation($text);
+        }
+
+        function resetAnimation(object) {
+            var el = object,
+            clone = el.clone(true);
+                   
+            el.before(clone);
+            el.remove();
+            clone.show();
+        }
 
         function playInterval() {
             // Random number from 0 to 12

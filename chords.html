@@ -4,109 +4,7 @@
 
     <title>Notémon Chords</title>
 
-    <style type="text/css">
-    body {
-        font-family: 'Open Sans', sans-serif;
-        font-size: 20px;
-        font-weight: 300;
-        padding: 0px;
-        margin: 0px;
-    }
-    header {
-        width: 100%;
-        font-weight: 300;
-        letter-spacing: 3px;
-        background-color: #f68e56;
-        padding: 9px;
-        margin-bottom: 45px;
-        color: #fff;
-    }
-    #chord-container {
-        width: 288px;
-        margin: 0 auto;
-        border-radius: 3px;
-        background-color: #7e8386;
-        border: 1px solid #7e7e7e;
-    }
-    .header {
-        height: 200px;
-        text-align: center;
-        color: #fff;
-    }
-    .header:hover {
-        cursor: pointer;
-    }
-    .header .fa-music {
-        font-size: 100px;
-        color: #fff;
-        margin-top: 45px;
-    }
-    #chord-container #options {
-        background-color: #e0e0e0;
-    }
-    #chord-container .btn {
-        position: relative;
-        height: 50px;
-        width: 50%;
-        float: left;
-        border-right: 1px solid #7e7e7e;
-        border-bottom: 1px solid #7e7e7e;
-        padding: 12px;
-        text-align: center;
-        box-sizing: border-box;
-        overflow: hidden;
-    }
-    #chord-container .btn:hover {
-        background-color: #cacaca;
-        cursor: pointer;
-    }
-    #chord-container .btn.major::after, #chord-container .btn.minor::after, #chord-container .btn.augmented::after {
-        content: '';
-        display: block;
-        position: absolute;
-        top: 15px;
-        right: -17px;
-        width: 51px;
-        padding: 2px;
-        text-align: center;
-        font-size: 13px;
-        font-weight: 300;
-        color: #fff;
-        letter-spacing: 2px;
-
-        -webkit-transform: rotate(90deg);
-        -moz-transform: rotate(90deg);
-        -o-transform: rotate(90deg);
-        -ms-transform: rotate(90deg);
-        transform: rotate(90deg);
-    }
-    #chord-container .btn.major::after {
-        content: 'maj';
-        background-color: #7cc576;
-    }
-    #chord-container .btn.minor::after {
-        content: 'min';
-        background-color: #f68e56;
-    }
-    #chord-container .btn.augmented::after {
-        content: 'aug';
-        background-color: #a186be;
-    }
-    #chord-container .btn-wide {
-        width: 100%;
-        border-right: none;
-    }
-    #chord-container .btn-wide.end {
-        border-bottom: none;
-    }
-    #chord-container .btn.end {
-        border-right: none;
-    }
-    #chord-container .btn.bottom {
-        border-bottom: none;
-    }
-    </style>
-
+    <link href='css/style.min.css' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,  400,600,800' rel='stylesheet' type='text/css'>
     <link href='css/font-awesome.min.css' rel='stylesheet' type='text/css'>
     <link href='css/animate.css' rel='stylesheet' type='text/css'>
@@ -132,10 +30,13 @@
 
     <div id="chord-container">
         <div class="header">
-            <i class="fa fa-music animated" aria-hidden="true"></i>
-            <p class="status">
-                Click to start
-            </p>
+            <div class="success"></div>
+            <div class="content">
+                <i class="fa fa-music animated" aria-hidden="true"></i>
+                <p class="status">
+                    Click to start
+                </p>
+            </div>
         </div>
 
         <div id="options">
