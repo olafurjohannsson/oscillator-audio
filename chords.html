@@ -2,7 +2,7 @@
 
 <head>
 
-    <title>Notémon</title>
+    <title>Notémon Chords</title>
 
     <style type="text/css">
     body {
@@ -21,7 +21,7 @@
         margin-bottom: 45px;
         color: #fff;
     }
-    #interval-container {
+    #chord-container {
         width: 288px;
         margin: 0 auto;
         border-radius: 3px;
@@ -41,10 +41,10 @@
         color: #fff;
         margin-top: 45px;
     }
-    #interval-container #options {
+    #chord-container #options {
         background-color: #e0e0e0;
     }
-    #interval-container .btn {
+    #chord-container .btn {
         position: relative;
         height: 50px;
         width: 50%;
@@ -56,11 +56,11 @@
         box-sizing: border-box;
         overflow: hidden;
     }
-    #interval-container .btn:hover {
+    #chord-container .btn:hover {
         background-color: #cacaca;
         cursor: pointer;
     }
-    #interval-container .btn.major::after, #interval-container .btn.minor::after, #interval-container .btn.augmented::after {
+    #chord-container .btn.major::after, #chord-container .btn.minor::after, #chord-container .btn.augmented::after {
         content: '';
         display: block;
         position: absolute;
@@ -80,29 +80,29 @@
         -ms-transform: rotate(90deg);
         transform: rotate(90deg);
     }
-    #interval-container .btn.major::after {
+    #chord-container .btn.major::after {
         content: 'maj';
         background-color: #7cc576;
     }
-    #interval-container .btn.minor::after {
+    #chord-container .btn.minor::after {
         content: 'min';
         background-color: #f68e56;
     }
-    #interval-container .btn.augmented::after {
+    #chord-container .btn.augmented::after {
         content: 'aug';
         background-color: #a186be;
     }
-    #interval-container .btn-wide {
+    #chord-container .btn-wide {
         width: 100%;
         border-right: none;
     }
-    #interval-container .btn-wide.end {
+    #chord-container .btn-wide.end {
         border-bottom: none;
     }
-    #interval-container .btn.end {
+    #chord-container .btn.end {
         border-right: none;
     }
-    #interval-container .btn.bottom {
+    #chord-container .btn.bottom {
         border-bottom: none;
     }
     </style>
@@ -127,10 +127,10 @@
     </select>-->
 
     <header>
-        Notémon
+        Notémon <b>Chords</b>
     </header>
 
-    <div id="interval-container">
+    <div id="chord-container">
         <div class="header">
             <i class="fa fa-music animated" aria-hidden="true"></i>
             <p class="status">
@@ -139,25 +139,10 @@
         </div>
 
         <div id="options">
-            <div class="btn minor" data-steps="1">2nd</div>
-            <div class="btn major end" data-steps="2">2nd</div>
-
-            <div class="btn minor" data-steps="3">3rd</div>
-            <div class="btn major end" data-steps="4">3rd</div>
-
-            <div class="btn" data-steps="5">4th</div>
-            <div class="btn augmented end" data-steps="6">4th</div>
-
-            <div class="btn btn-wide" data-steps="7">5th</div>
-
-            <div class="btn minor" data-steps="8">6th</div>
-            <div class="btn major end" data-steps="9">6th</div>
-
-            <div class="btn minor" data-steps="10">7th</div>
-            <div class="btn major end" data-steps="11">7th</div>
-
-            <div class="btn btn bottom" data-steps="0">Unison</div>
-            <div class="btn btn end bottom" data-steps="12">Octave</div>
+            <div class="btn btn" data-type="minor">Minor</div>
+            <div class="btn btn end" data-type="major">Major</div>
+            <div class="btn btn bottom" data-type="augmented">Augmented</div>
+            <div class="btn btn end bottom" data-type="diminished">Diminished</div>
 
             <div style="clear: both"></div>
         </div>
@@ -193,6 +178,8 @@
 
     $(document).ready(function () {
 
+        window.correctChordType = "";
+
         $("#hertz").change(function () {
             $("#hertz-value").text(this.value);
             window.osc.frequency.value = parseInt(this.value); // value in hertz
@@ -204,30 +191,30 @@
         });
 
         $("#start").click(function () {
-            playInterval();
+            playChord();
         });
 
         $("#stop").click(function () {
             
         });
 
-        $("#interval-container .header").click(function () {
-            playInterval();
-            $("#interval-container p").hide();
+        $("#chord-container .header").click(function () {
+            playChord();
+            $("#chord-container p").hide();
         });
 
-        $("#interval-container .btn").click(function () {
-            var userAnswer = $(this).data("steps");
-            var correctAnswer = Math.abs(window.firstStep - window.secondStep); // Always make positive number
+        $("#chord-container .btn").click(function () {
+            var userAnswer = $(this).data("type");
+            var correctAnswer = window.correctChordType;
 
             if (userAnswer == correctAnswer) {
-                $("#interval-container .status").text("Correct!").show();
+                $("#chord-container .status").text("Correct!").show();
             } else {
-                $("#interval-container .status").text("Wrong :(").show();
+                $("#chord-container .status").text("Wrong: " + window.correctChordType).show();
             }
         });
 
-        function playInterval() {
+        function playChord() {
             // Random number from 0 to 12
             // Math.pow(440 * (1.059463094359), random);
 
@@ -235,47 +222,77 @@
             // Set timeout
                 // Set another timeout for second note
 
-            window.rootNote = 440; // a4
-            window.firstStep = 0;
-            window.secondStep = 0;
+            var ROOT_NOTE = 440; // A4
+            var EQUAL_TEMPERED_CONST = 1.059463094359;
 
-            function randomNote(order) {
+            function randomRoot() { // Gives you random root note from A4 to A5
                 var rando = Math.floor(Math.random() * 12) + 1;
+                return ROOT_NOTE * Math.pow(EQUAL_TEMPERED_CONST, rando);
+            }
 
-                if (order == "first") {
-                    firstStep = rando;
-                } else {
-                    secondStep = rando;
+            function getNoteFromSteps(steps, rootNote) {
+                return rootNote * Math.pow(EQUAL_TEMPERED_CONST, steps);   
+            }
+
+            function getChord(type) {
+                var root = randomRoot();
+                var chord = {
+                    root: root,
+                    third: 0,
+                    fifth: 0
                 }
-                // 440 is a4
-                return rootNote * Math.pow(1.059463094359, rando); 
+
+                if (type == "minor") {
+                    chord.third = getNoteFromSteps(3, root);
+                    chord.fifth = getNoteFromSteps(7, root);
+                } else if (type == "major") {
+                    chord.third = getNoteFromSteps(4, root);
+                    chord.fifth = getNoteFromSteps(7, root);
+                } else if (type == "diminished") {
+                    chord.third = getNoteFromSteps(3, root);
+                    chord.fifth = getNoteFromSteps(6, root);
+                } else if (type == "augmented") {
+                    chord.third = getNoteFromSteps(4, root);
+                    chord.fifth = getNoteFromSteps(8, root);
+                }
+
+                return chord;
             }
 
             setTimeout(function () {
-                // First note played
+                var chordTypes = ["minor", "major", "diminished", "augmented"];
+                var chordType = chordTypes[Math.floor(Math.random() * chordTypes.length)];
+                window.correctChordType = chordType;
+
+                // Get random chord
+                var chord = getChord(chordType);
+
+                // Create oscs and play chord
                 var osc1 = oscillator().osc;
-                osc1.frequency.value = randomNote("first");
+                osc1.frequency.value = chord.root;
+                
+                var osc2 = oscillator().osc;
+                osc2.frequency.value = chord.third;
+                osc2.type = "triangle";
+
+                var osc3 = oscillator().osc;
+                osc3.frequency.value = chord.fifth;
+                osc3.type = "sine";
+
                 osc1.start();
+                osc2.start();
+                osc3.start();
+
                 $(".fa-music").addClass("tada");
 
                 setTimeout(function () {
-                    // Turn off first note
+                    // Turn off chord
                     osc1.stop();
+                    osc2.stop();
+                    osc3.stop();
+
                     $(".fa-music").removeClass("tada");
 
-                    sleep(1333).then(() => {
-                        // Play second note
-                        var osc2 = oscillator().osc;
-                        osc2.frequency.value = randomNote("second");
-                        osc2.start();
-                        $(".fa-music").addClass("tada");
-
-                        // Stop second note
-                        setTimeout(function () {
-                            osc2.stop();
-                            $(".fa-music").removeClass("tada");
-                        }, 1333);
-                    })
                 }, 1333);
             }, 333)
         }
