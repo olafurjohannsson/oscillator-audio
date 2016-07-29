@@ -2,7 +2,7 @@
 
 <head>
 
-    <title>Notémon</title>
+    <title>Notï¿½mon</title>
 
     <link href='css/style.min.css' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,  400,600,800' rel='stylesheet' type='text/css'>
@@ -25,7 +25,7 @@
     </select>-->
 
     <header>
-        Notémon
+        Notï¿½mon
     </header>
 
     <div id="interval-container">
@@ -69,8 +69,8 @@
 
     <button class="successs" type="button" style="position: absolute; top: 0;">success</button>
 </body>
-<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-    crossorigin="anonymous"></script>
+<script src="oscillator.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 <script type="text/javascript">
     // get audio
     
@@ -106,7 +106,7 @@
 
         $("#freq").change(function() {
             console.log(this.value);
-            window.osc.type = this.value; // sine wave — other values are 'square', 'sawtooth', 'triangle' and 'custom'
+            window.osc.type = this.value; // sine wave ï¿½ other values are 'square', 'sawtooth', 'triangle' and 'custom'
         });
 
         $("#start").click(function () {
@@ -176,6 +176,24 @@
             // Instance of osc for random note #1
             // Set timeout
                 // Set another timeout for second note
+            
+            /*
+                var mgr = oscManager();
+
+                mgr.wait(333)
+                   .oscillator()
+                   .randomNote()
+                   .start()
+                   .wait(1333)
+                   .stop()
+                   .sleep(1333)
+                   .oscillator()
+                   .randomNote()
+                   .start()
+                   .wait(1333)
+                   .stop();
+
+            */
 
             window.rootNote = 440; // a4
             window.firstStep = 0;
