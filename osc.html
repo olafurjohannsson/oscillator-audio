@@ -191,6 +191,13 @@
         return new Promise((resolve) => setTimeout(resolve, time));
     }
 
+    function testOsc() {
+        var osc = new Oscillator();
+        console.log(osc);  
+        osc.note; 
+        osc.printPitchMatrix();
+    }
+
     $(document).ready(function () {
 
         $("#hertz").change(function () {
@@ -204,7 +211,9 @@
         });
 
         $("#start").click(function () {
-            playInterval();
+            var osc = Oscillator();
+            console.info(osc);
+            //playInterval();
         });
 
         $("#stop").click(function () {
@@ -250,6 +259,13 @@
                    .start()
                    .wait(1333)
                    .stop();
+
+                mgr.wait(333)
+                   .playNote(-1)
+                   .for(1333)
+                   .playNote(-1)
+                   .for(1333);
+
 
             */
 

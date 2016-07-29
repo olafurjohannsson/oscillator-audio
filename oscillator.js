@@ -8,14 +8,14 @@ class Utils {
 }
 
 class OscillatorManager {
-    
+
     constructor() {
         // get HTML 5 web audio context
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         if (!this.audioCtx)
             return;
-        
+
         this.createStarted = false;
         this.oscillatorCount = 0;
 
@@ -25,25 +25,25 @@ class OscillatorManager {
     create(n) { // create oscillators
         if (this.createStarted)
             return this;
-        
+
         this.oscillatorCount = n;
         this.createStarted = true;
         return this;
     }
 
-/*
-    play(...chords) {
-        for (const chord of chords) {
-            yield chord;
+    /*
+        play(...chords) {
+            for (const chord of chords) {
+                yield chord;
+            }
+            return this;
         }
-        return this;
-    }
+        
+        * [Symbol.iterator]() {
     
-    * [Symbol.iterator]() {
-
-    }
-
-*/
+        }
+    
+    */
 
 
 }
@@ -73,9 +73,13 @@ const Steps = {
 
 class Oscillator {
 
-    
+
     step(power) {
         return Math.pow((440 * 1.059463094359), power);
+    }
+
+    next(frequency) {
+        return frequency * 1.059463094359;
     }
 
     // a4
@@ -86,17 +90,67 @@ class Oscillator {
     constructor(audioContext) {
         // single audiocontext for many osc or one ctx??
         this.audioContext = audioContext;
-        
+
         if (!this.audioContext)
             return;
 
-        // start with 3 chords
-        
+        this._osc = this.audioContext.createOscillator();
+        this._gain = this.audioContext.createGain();
+
+        this._osc.connect(gain);
+        this._gain.connect(this.audioContext.destination);
     }
 
-    set frequency(oscillator, value) {
-        oscillator.frequency.value = value;
-        oscillator.type = 'sine';
+    get note() {
+        //let root = this.root();
+        //[...Array(6).keys()].map(i => Array(6));
+        //let pitchMatrix = [[],[]];
+        let pitchMatrix = [...Array(12).keys()].map(i => Array(9));
+        let keys = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'];
+        let prev = 0;
+        for (let i = 0; i < keys.length; i++) {
+            for (let j = 0; j < 9; j++) {
+                pitchMatrix[i][j] = {
+                    'name': keys[i] + j.toString(),
+                    'note': j.toString(),
+                    'pitch': keys[i],
+                    'frequency': (i == 0 && j == 0) ?
+                        16.35 :// first
+                        this.next(prev)
+                };
+                prev = pitchMatrix[i][j].frequency;
+            }
+        }
+        this.pitchMatrix = pitchMatrix;
+    }
+
+    printPitchMatrix() {
+        for (let i = 0; i < 12; i++) {
+            for (let j = 0; j < 9; j++) {
+                console.log(this.pitchMatrix[i][j]);
+            }
+        }
+    }
+
+
+    playNote(note, time) {
+        //fixme: use some other value
+        if (note == -1) {
+            // rand
+        }
+
+        let osc = this.create();
+        this.frequency(196);
+        osc.oscillator.start();
+        this.sleep(time);
+        osc.oscillator.stop();
+    }
+
+
+
+    set frequency(frequency) {
+        this._osc.frequency.value = frequency;
+        this._osc.type = 'sine';
         return this;
     }
 
@@ -116,30 +170,16 @@ class Oscillator {
     }
 
     create() {
-        var osc = this.createOscillator();
-        var gain = this.createGain();
-
-        osc.connect(gain);
-        gain.connect(this.audioContext.destination);
-        return {
-            oscillator: osc,
-            gain: gain
-        }
+        return this;
     }
 
-    createOscillator() {
-        return this.audioContext.createOscillator();
-    }
 
-    createGain() {
-        return this.audioContext.createGain();
-    }
 }
 
 
 
 function f() {
-    var osc = Oscillator();
+    var osc = new Oscillator();
 
-    
+
 }
