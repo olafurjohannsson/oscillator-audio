@@ -2,6 +2,9 @@
 @color-green-success: #9eef97;
 @color-gray: #7e8386;
 @color-orange: #f68e56;
+@color-red: #f65656;
+@color-purple: #a186be;
+@color-blue: #768ec5;
 
 body {
     font-family: 'Open Sans', sans-serif;
@@ -111,6 +114,19 @@ header {
     animation: colorchange 1s;
 }
 
+.ani-wrong-fade-gradient {
+    display: none;
+    animation: colorchange-wrong 3s;
+}
+
+.ani-playing-fade-gradient {
+    display: none;
+    animation: colorchange-playing 2.6s;
+    animation-iteration-count: 2;
+    animation-timing-function: ease-out;  
+    animation-delay: 366ms;
+}
+
 .ani-success-circle {
     display: none;
     position: absolute;
@@ -150,7 +166,6 @@ header {
   50% {
     opacity: 1;
     transform: scale(1.3);
-    color: @color-orange;
   }
   100% {
     opacity: 1;
@@ -203,6 +218,56 @@ header {
     }
 }
 
+@keyframes colorchange-wrong
+{
+  0%   {
+    background: @color-red;
+    -webkit-transition: opacity .1s ease-in;
+    -moz-transition: opacity .1s ease-in;
+    -ms-transition: opacity .1s ease-in;
+    -o-transition: opacity .1s ease-in;
+     opacity: .6;
+  }
+  30% {
+     opacity: .9;
+  }
+  100% {
+        background: @color-gray;
+        -webkit-transition: opacity 4s ease-in-out;
+        -moz-transition: opacity 4s ease-in-out;
+        -ms-transition: opacity 4s ease-in-out;
+        -o-transition: opacity 4s ease-in-out;
+         opacity: 1;
+    }
+}
+
+@keyframes colorchange-playing
+{
+  0%   {
+    background: @color-blue;
+    -webkit-transition: opacity .1s ease-in;
+    -moz-transition: opacity .1s ease-in;
+    -ms-transition: opacity .1s ease-in;
+    -o-transition: opacity .1s ease-in;
+     opacity: .6;
+  }
+  40% {
+    background: @color-purple;
+     opacity: .9;
+  }
+  80% {
+        background: @color-green;
+        -webkit-transition: opacity 3s ease-in-out;
+        -moz-transition: opacity 3s ease-in-out;
+        -ms-transition: opacity 3s ease-in-out;
+        -o-transition: opacity 3s ease-in-out;
+         opacity: .6;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 /* Interval */
 #interval-container {
     width: 288px;
@@ -220,7 +285,7 @@ header {
         z-index: 1;
         overflow: hidden;
 
-        .success-indicator {
+        .gradient-container {
             z-index: -1;
 
             position: absolute;
