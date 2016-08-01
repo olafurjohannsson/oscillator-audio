@@ -22,7 +22,20 @@ header {
     margin-bottom: 45px;
     color: #fff;
 }
-#chord-container {
+
+/* SHARED */
+a, a:visited, a:focus, a:active  {
+    color: #fff;
+    text-decoration: none;
+    line-height: 13px;
+    &:hover {
+        border-bottom: 1px solid #fff;
+        cursor: pointer;
+    }
+}
+
+/* CHORD */
+/*#chord-container {
     width: 288px;
     margin: 0 auto;
     border-radius: 3px;
@@ -106,7 +119,7 @@ header {
 }
 #chord-container .btn.bottom {
     border-bottom: none;
-}
+}*/
 
 /* Animation */
 .ani-success-fade-gradient {
@@ -291,6 +304,16 @@ header {
         color: #fff;
         z-index: 1;
         overflow: hidden;
+        .lnk-skip {
+            display: none;
+            position: absolute;
+            top: 41%;
+            right: 37px;
+            padding: 10px;
+            &:hover {
+                border: none;
+            }
+        }
         .repeat {
             display: none;
             position: absolute;
@@ -312,9 +335,6 @@ header {
         .content {
             z-index: 1;
         }
-    }
-    .header:hover {
-        cursor: pointer;
     }
     .header .fa-music {
         font-size: 100px;
