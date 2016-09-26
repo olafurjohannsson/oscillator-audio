@@ -7,6 +7,14 @@ class Utils {
     }
 }
 
+
+/*
+    1. can click shit before starting game
+    2. add seo stuff, header, meta stuff
+    3. google analytics
+    4. google ad
+
+*/
 class OscillatorManager {
 
     constructor() {
