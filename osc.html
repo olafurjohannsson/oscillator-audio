@@ -1,8 +1,8 @@
-<html>
+﻿<html>
 
 <head>
 
-    <title>Not�mon</title>
+    <title>Notémon</title>
 
     <link href='css/style.min.css' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,  400,600,800' rel='stylesheet' type='text/css'>
@@ -25,21 +25,23 @@
     </select>-->
 
     <header>
-        Not�mon
+        Notémon
     </header>
 
     <div id="interval-container">
         <div class="header">
             <!-- Animations -->
-            <div class="success-indicator ani-success-fade-gradient"></div> <!-- Animated gradient -->
+            <div class="gradient-container ani-playing-fade-gradient"></div> <!-- Animated gradient -->
             <div class="ani-success-circle"></div> <!-- Animated circle -->
 
             <div class="content">
+                <i class="fa fa-refresh repeat" aria-hidden="true"></i>
                 <i class="fa fa-music animated" aria-hidden="true"></i>
-                <p class="status">
-                    Click to start
-                </p>
+                <p class="status"></p>
             </div>
+
+            <a href="javascript:void(0)" class="lnk-click-to-start">Click to start</a>
+            <a href="javascript:void(0)" class="lnk-skip"><i class="fa fa-step-forward"></i></a>
         </div>
 
         <div id="options">
@@ -67,10 +69,11 @@
         </div>
     </div>
 
-    <button class="successs" type="button" style="position: absolute; top: 0;">success</button>
+    <!--<button class="successs" type="button" style="position: absolute; top: 0;" onclick="runSuccessAnimation()">success</button>
+    <button class="wrong" type="button" style="position: absolute; top: 0;left: 30px;" onclick="runWrongAnimation()">wrong</button>-->
 </body>
 <script src="oscillator.js" type="text/javascript"></script>
-<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script src="js/jquery-2.2.4.min.js" type="text/javascript"></script>
 <script type="text/javascript">
     // get audio
     
@@ -104,6 +107,195 @@
         osc.printPitchMatrix();
     }
 
+    function resetHeaderAnimation() {
+        $(".gradient-container")
+        .removeClass("ani-wrong-fade-gradient")
+        .removeClass("ani-success-fade-gradient")
+        .removeClass("ani-playing-fade-gradient");
+
+        $(".fa-music").removeClass("shake").removeClass("bounce");
+    }
+
+    function runPlayingAnimation() {
+        resetHeaderAnimation();
+
+        resetAnimation($(".gradient-container").addClass("ani-playing-fade-gradient"));
+
+        $("#interval-container .status").text("")
+    }
+
+    function runSuccessAnimation() {
+        resetHeaderAnimation();
+        var fadeAni = $(".gradient-container").addClass("ani-success-fade-gradient"),
+        circleAni =  $(".ani-success-circle");
+
+        resetAnimation(fadeAni);
+        resetAnimation(circleAni);
+
+        $(".fa-music").removeClass("shake");
+
+        /* Note bounce ani */
+        setTimeout(function () {
+            var $musicNote = $(".fa-music");
+            $musicNote.addClass("bounce");
+
+            var el = $musicNote,  
+            newone = el.clone(true);
+                   
+            el.before(newone);
+                
+            el.remove();
+            $musicNote.removeClass("bounce");
+        });
+
+        var $text = $("#interval-container .status");
+        setSuccessText('success');
+        $text.addClass("ani-success-text-blink");
+        resetAnimation($text);
+
+        $(".lnk-skip").hide();
+        $(".repeat").hide();
+    }
+
+    function runWrongAnimation() {
+        resetHeaderAnimation();
+        var fadeAni = $(".gradient-container").addClass("ani-wrong-fade-gradient");
+
+        resetAnimation(fadeAni);
+
+        $(".fa-music").removeClass("bounce");
+
+        /* Note bounce ani */
+        setTimeout(function () {
+            var $musicNote = $(".fa-music");
+
+            var el = $musicNote,  
+            newone = el.clone(true);
+                   
+            el.before(newone);
+                
+            el.remove();
+        });
+
+        var $text = $("#interval-container .status");
+        setSuccessText('wrong');
+        $text.addClass("ani-success-text-blink");
+        resetAnimation($text);
+    }
+
+    function resetAnimation(object) {
+        var el = object,
+        clone = el.clone(true);
+               
+        el.before(clone);
+        el.remove();
+        clone.show();
+    }
+
+    function setSuccessText(type) {
+        var $status = $("#interval-container .status");
+        if (type == 'success') {
+            $status.text("Correct!");
+        } else if (type == 'wrong') {
+            $status.text("Wrong :(")
+        }
+    }
+
+    function playInterval(firstNote, secondNote) {
+        // Random number from 0 to 12
+        // Math.pow(440 * (1.059463094359), random);
+
+        // Instance of osc for random note #1
+        // Set timeout
+            // Set another timeout for second note
+        
+        /*
+            var mgr = oscManager();
+
+            mgr.wait(333)
+               .oscillator()
+               .randomNote()
+               .start()
+               .wait(1333)
+               .stop()
+               .sleep(1333)
+               .oscillator()
+               .randomNote()
+               .start()
+               .wait(1333)
+               .stop();
+
+            mgr.wait(333)
+               .playNote(-1)
+               .for(1333)
+               .playNote(-1)
+               .for(1333);
+
+
+        */
+
+        window.rootNote = 440; // a4
+        window.firstStep = firstNote ? window.firstStep : 0;
+        window.secondStep = secondNote ? window.secondStep : 0;
+
+        function randomNote(order) {
+            var rando = Math.floor(Math.random() * 12) + 1;
+
+            if (order == "first") {
+                firstStep = rando;
+            } else {
+                secondStep = rando;
+            }
+            // 440 is a4
+            return rootNote * Math.pow(1.059463094359, rando); 
+        }
+
+        $(".lnk-skip").hide();
+        $(".repeat").hide();
+        runPlayingAnimation();
+
+
+        setTimeout(function () {
+
+            // First note played
+            var osc1 = oscillator().osc;
+            osc1.frequency.value = firstNote ? firstNote : randomNote("first");
+            osc1.start();
+
+            $(".fa-music").addClass("tada");
+
+            setTimeout(function () {
+                // Turn off first note
+                osc1.stop();
+                $(".fa-music").removeClass("tada");
+
+                sleep(1333).then(() => {
+                    // Play second note
+                    var osc2 = oscillator().osc;
+                    osc2.frequency.value = secondNote ? secondNote : randomNote("second");
+                    osc2.start();
+
+                    // Stop second note
+                    setTimeout(function () {
+                        osc2.stop();
+
+                        $(".repeat").show();
+                        $(".lnk-skip").show();
+                    }, 1333);
+                })
+            }, 1333);
+        }, 333)
+    }
+
+    function repeatInterval() {
+        debugger;
+        playInterval(getNoteFromSteps(firstStep), getNoteFromSteps(secondStep));
+    }
+
+    function getNoteFromSteps(steps) {
+        return rootNote * Math.pow(1.059463094359, steps); 
+    }
+
     $(document).ready(function () {
 
         $("#hertz").change(function () {
@@ -126,135 +318,37 @@
             
         });
 
-        $("#interval-container .header").click(function () {
+        $(".lnk-click-to-start").click(function () {
             playInterval();
-            $("#interval-container p").hide();
+            $(this).hide();
+        });
+
+        $(".lnk-skip").click(function () {
+            playInterval();
+            $(this).hide();
         });
 
         $("#interval-container .btn").click(function () {
             var userAnswer = $(this).data("steps");
             var correctAnswer = Math.abs(window.firstStep - window.secondStep); // Always make positive number
-            runSuccessAnimation();
-            $("#interval-container .status").text("Correct!").show();return;
-
-            if (userAnswer == correctAnswer) {
-                $("#interval-container .status").text("Correct!").show();
-            } else {
-                $("#interval-container .status").text("Wrong :(").show();
-            }
-            $(".success-indicator").toggleClass("success");
-        });
-
-        function runSuccessAnimation() {
-            var fadeAni = $(".ani-success-fade-gradient"),
-            circleAni =  $(".ani-success-circle");
-
-            resetAnimation(fadeAni);
-            resetAnimation(circleAni);
-
-            /* Note bounce ani */
-            setTimeout(function () {
-                var $musicNote = $(".fa-music");
-                $musicNote.addClass("bounce");
-
-                var el = $musicNote,  
-                newone = el.clone(true);
-                       
-                el.before(newone);
-                    
-                el.remove();
-            });
-
-            var $text = $("#interval-container .status").text("Correct!").addClass("ani-success-text-blink");
-            resetAnimation($text);
-        }
-
-        function resetAnimation(object) {
-            var el = object,
-            clone = el.clone(true);
-                   
-            el.before(clone);
-            el.remove();
-            clone.show();
-        }
-
-        function playInterval() {
-            // Random number from 0 to 12
-            // Math.pow(440 * (1.059463094359), random);
-
-            // Instance of osc for random note #1
-            // Set timeout
-                // Set another timeout for second note
             
-            /*
-                var mgr = oscManager();
-
-                mgr.wait(333)
-                   .oscillator()
-                   .randomNote()
-                   .start()
-                   .wait(1333)
-                   .stop()
-                   .sleep(1333)
-                   .oscillator()
-                   .randomNote()
-                   .start()
-                   .wait(1333)
-                   .stop();
-
-                mgr.wait(333)
-                   .playNote(-1)
-                   .for(1333)
-                   .playNote(-1)
-                   .for(1333);
-
-
-            */
-
-            window.rootNote = 440; // a4
-            window.firstStep = 0;
-            window.secondStep = 0;
-
-            function randomNote(order) {
-                var rando = Math.floor(Math.random() * 12) + 1;
-
-                if (order == "first") {
-                    firstStep = rando;
-                } else {
-                    secondStep = rando;
-                }
-                // 440 is a4
-                return rootNote * Math.pow(1.059463094359, rando); 
-            }
-
-            setTimeout(function () {
-                // First note played
-                var osc1 = oscillator().osc;
-                osc1.frequency.value = randomNote("first");
-                osc1.start();
-                $(".fa-music").addClass("tada");
+            if (userAnswer == correctAnswer) {
+                runSuccessAnimation();
 
                 setTimeout(function () {
-                    // Turn off first note
-                    osc1.stop();
-                    $(".fa-music").removeClass("tada");
+                    playInterval();
+                    runPlayingAnimation();
+                },2000);
+            } else {
+                runWrongAnimation();
+            }
+        });
 
-                    sleep(1333).then(() => {
-                        // Play second note
-                        var osc2 = oscillator().osc;
-                        osc2.frequency.value = randomNote("second");
-                        osc2.start();
-                        $(".fa-music").addClass("tada");
-
-                        // Stop second note
-                        setTimeout(function () {
-                            osc2.stop();
-                            $(".fa-music").removeClass("tada");
-                        }, 1333);
-                    })
-                }, 1333);
-            }, 333)
-        }
+        $(".repeat").click(function (e) {
+            repeatInterval();
+            runPlayingAnimation();
+            e.stopPropagation();
+        });
 
         function g3(obj) {
             obj.osc.frequency.value = 196.0;
